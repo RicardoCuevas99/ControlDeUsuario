@@ -1,0 +1,11 @@
+C:\Users\ricar\OneDrive\Documentos\examenExec\examenTecnico.exe
+C:\Users\ricar\OneDrive\Documentos\examenExec\examenTecnico.dll
+C:\Users\ricar\OneDrive\Documentos\examenExec\examenTecnico.deps.json
+C:\Users\ricar\OneDrive\Documentos\examenExec\examenTecnico.runtimeconfig.json
+C:\Users\ricar\OneDrive\Documentos\examenExec\examenTecnico.pdb
+C:\Users\ricar\OneDrive\Documentos\examenExec\System.Data.SqlClient.dll
+C:\Users\ricar\OneDrive\Documentos\examenExec\runtimes\win-arm64\native\sni.dll
+C:\Users\ricar\OneDrive\Documentos\examenExec\runtimes\win-x64\native\sni.dll
+C:\Users\ricar\OneDrive\Documentos\examenExec\runtimes\win-x86\native\sni.dll
+C:\Users\ricar\OneDrive\Documentos\examenExec\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\ricar\OneDrive\Documentos\examenExec\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
