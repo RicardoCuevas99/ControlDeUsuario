@@ -1,3 +1,5 @@
+using examenTecnico.modelo;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -147,7 +149,7 @@ namespace examenTecnico
             }
         }
 
-        public void insertarUsuario(string pUsuario, int pTipoUsuario, string pArea, int pActivo, string pNombre, string pApellidoPaterno, string pApellidoMaterno, int pEdad, string pDirección)
+        public void insertarUsuario(Usuario usuario)
         {
             using (SqlConnection cn = new SqlConnection("Data Source=ricardoCuevas\\SQLEXPRESS;Initial Catalog=ControlUsuario;Integrated Security=True"))
             {
@@ -156,15 +158,15 @@ namespace examenTecnico
                     SqlCommand cmd = new SqlCommand("sp_altaUsuario", cn);
                     cn.Open();
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@usuario", SqlDbType.VarChar).Value = pUsuario;
-                    cmd.Parameters.Add("@tipoUsuario", SqlDbType.Int).Value = pTipoUsuario;
-                    cmd.Parameters.Add("@area", SqlDbType.VarChar).Value = pArea;
-                    cmd.Parameters.Add("@activo", SqlDbType.Int).Value = pActivo;
-                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar).Value = pNombre;
-                    cmd.Parameters.Add("@apellidoPaterno", SqlDbType.VarChar).Value = pApellidoPaterno;
-                    cmd.Parameters.Add("@apellidoMaterno", SqlDbType.VarChar).Value = pApellidoMaterno;
-                    cmd.Parameters.Add("@edad", SqlDbType.Int).Value = pEdad;
-                    cmd.Parameters.Add("@dirección", SqlDbType.VarChar).Value = pDirección;
+                    cmd.Parameters.Add("@usuario", SqlDbType.VarChar).Value = usuario.usuario;
+                    cmd.Parameters.Add("@tipoUsuario", SqlDbType.Int).Value = usuario.TipoUsuario;
+                    cmd.Parameters.Add("@area", SqlDbType.VarChar).Value = usuario.Area;
+                    cmd.Parameters.Add("@activo", SqlDbType.Int).Value = usuario.Activo;
+                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar).Value = usuario.Nombre;
+                    cmd.Parameters.Add("@apellidoPaterno", SqlDbType.VarChar).Value = usuario.ApellidoPaterno;
+                    cmd.Parameters.Add("@apellidoMaterno", SqlDbType.VarChar).Value = usuario.ApellidoMaterno;
+                    cmd.Parameters.Add("@edad", SqlDbType.Int).Value = usuario.Edad;
+                    cmd.Parameters.Add("@dirección", SqlDbType.VarChar).Value = usuario.Direccion;
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("usuario Ingresado con Exito");
                 }
@@ -214,58 +216,35 @@ namespace examenTecnico
 
         private void btn_insertar_Click(object sender, EventArgs e)
         {
-            string Usuario = tb_usuario.Text;
-            int TipoUsuario = Convert.ToInt32(cb_tipoUsuario.SelectedValue);
-            string Area = tb_area.Text;
-            int Activo = verificarActivos();
-            string Nombre = tb_nombre.Text;
-            string ApellidoPaterno = tb_apellidoPat.Text;
-            string ApellidoMaterno = tb_apellidoMat.Text;
-            int Edad = Convert.ToInt32(tb_edad.Text);
-            string Direccion = tb_direccion.Text;
 
-            if (verificarusuario(Usuario) == 0)
+            Usuario nuevoUsuario = new Usuario
             {
-                insertarUsuario(Usuario, TipoUsuario, Area, Activo, Nombre, ApellidoPaterno, ApellidoMaterno, Edad, Direccion);
+                usuario = tb_usuario.Text,
+                TipoUsuario = Convert.ToInt32(cb_tipoUsuario.SelectedValue),
+                Area = tb_area.Text,
+                Activo = verificarActivos(),
+                Nombre = tb_nombre.Text,
+                ApellidoPaterno = tb_apellidoPat.Text,
+                ApellidoMaterno = tb_apellidoMat.Text,
+                Edad = Convert.ToInt32(tb_edad.Text),
+                Direccion = tb_direccion.Text
+            };
+
+            if (verificarusuario(nuevoUsuario.usuario) == 0)
+            {
+                insertarUsuario(nuevoUsuario);
                 dgv_usuario.DataSource = mostrarDatos();
                 vaciarCampos();
             }
             else
             {
-                MessageBox.Show("el usuario " + Usuario + " ya existe");
+                MessageBox.Show("el usuario " + nuevoUsuario.usuario + " ya existe");
             }
         }
 
         private void cb_tipoUsuario_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-        }
-
-        public void actualizarUsuario(int idUsuario, string pUsuario, int pTipoUsuario, int activo, string pNombre, string pApellidoPaterno, string pApellidoMaterno, int pEdad, string pDirección)
-        {
-            using (SqlConnection cn = new SqlConnection("Data Source=ricardoCuevas\\SQLEXPRESS;Initial Catalog=ControlUsuario;Integrated Security=True"))
-            {
-                try
-                {
-                    SqlCommand cmd = new SqlCommand("sp_actualizarUsuario", cn);
-                    cn.Open();
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idUsuario", SqlDbType.Int).Value = idUsuario;
-                    cmd.Parameters.Add("@usuario", SqlDbType.VarChar).Value = pUsuario;
-                    cmd.Parameters.Add("@tipoUsuario", SqlDbType.Int).Value = pTipoUsuario;
-                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar).Value = pNombre;
-                    cmd.Parameters.Add("@apellidoPaterno", SqlDbType.VarChar).Value = pApellidoPaterno;
-                    cmd.Parameters.Add("@apellidoMaterno", SqlDbType.VarChar).Value = pApellidoMaterno;
-                    cmd.Parameters.Add("@edad", SqlDbType.Int).Value = pEdad;
-                    cmd.Parameters.Add("@dirección", SqlDbType.VarChar).Value = pDirección;
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("usuario se ha actualizado con Exito");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error al ingresar el registro");
-                }
-            }
         }
 
         private void btn_eliminar_Click(object sender, EventArgs e)

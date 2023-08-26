@@ -1,4 +1,5 @@
-﻿using System;
+﻿using examenTecnico.modelo;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,6 +25,7 @@ namespace examenTecnico
         private void frm_actualizar_Load(object sender, EventArgs e)
         {
             cargarDatosUsuario();
+            llenarComboTipoUsuario();
         }
 
         public DataTable BuscarUsuario(int idUsuario)
@@ -53,8 +55,8 @@ namespace examenTecnico
                 tb_id.Text = Usuario.Rows[0]["idUsuario"].ToString();
                 tb_usuario.Text = Usuario.Rows[0]["usuario"].ToString();
                 cb_tipoUsuario.Text = Usuario.Rows[0]["tipoUsuario"].ToString();
-                rb_activo.Text = Usuario.Rows[0]["activo"].ToString();
-                rb_inactivo.Text = Usuario.Rows[0]["activo"].ToString();
+                int valorActivo = Convert.ToInt32(Usuario.Rows[0]["activo"]);
+                activos(valorActivo);
                 tb_nombre.Text = Usuario.Rows[0]["nombre"].ToString();
                 tb_apellidoPat.Text = Usuario.Rows[0]["apellidoPaterno"].ToString();
                 tb_apellidoMat.Text = Usuario.Rows[0]["apellidoMaterno"].ToString();
@@ -63,6 +65,15 @@ namespace examenTecnico
 
             }
 
+        }
+
+        public void activos(int n)
+        {
+            if (n == 1)
+            {
+                rb_activo.Checked = true;
+            }
+            else rb_inactivo.Checked = true;
         }
 
         public void llenarComboTipoUsuario()
@@ -95,7 +106,7 @@ namespace examenTecnico
             else { return -1; }
         }
 
-        public void actualizarUsuario(int idUsuario, string pUsuario, int pTipoUsuario, string pNombre, string pApellidoPaterno, string pApellidoMaterno, int pEdad, string pDirección)
+        public void actualizarUsuario(Usuario usuario)
         {
             using (SqlConnection cn = new SqlConnection("Data Source=ricardoCuevas\\SQLEXPRESS;Initial Catalog=ControlUsuario;Integrated Security=True"))
             {
@@ -104,14 +115,14 @@ namespace examenTecnico
                     SqlCommand cmd = new SqlCommand("sp_actualizarUsuario", cn);
                     cn.Open();
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idUsuario", SqlDbType.Int).Value = idUsuario;
-                    cmd.Parameters.Add("@usuario", SqlDbType.VarChar).Value = pUsuario;
-                    cmd.Parameters.Add("@tipoUsuario", SqlDbType.Int).Value = pTipoUsuario;
-                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar).Value = pNombre;
-                    cmd.Parameters.Add("@apellidoPaterno", SqlDbType.VarChar).Value = pApellidoPaterno;
-                    cmd.Parameters.Add("@apellidoMaterno", SqlDbType.VarChar).Value = pApellidoMaterno;
-                    cmd.Parameters.Add("@edad", SqlDbType.Int).Value = pEdad;
-                    cmd.Parameters.Add("@dirección", SqlDbType.VarChar).Value = pDirección;
+                    cmd.Parameters.Add("@idUsuario", SqlDbType.Int).Value = usuario.UsuarioId;
+                    cmd.Parameters.Add("@usuario", SqlDbType.VarChar).Value = usuario.usuario;
+                    cmd.Parameters.Add("@tipoUsuario", SqlDbType.Int).Value = usuario.TipoUsuario;
+                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar).Value = usuario.Nombre;
+                    cmd.Parameters.Add("@apellidoPaterno", SqlDbType.VarChar).Value = usuario.ApellidoPaterno;
+                    cmd.Parameters.Add("@apellidoMaterno", SqlDbType.VarChar).Value = usuario.ApellidoMaterno;
+                    cmd.Parameters.Add("@edad", SqlDbType.Int).Value = usuario.Edad;
+                    cmd.Parameters.Add("@dirección", SqlDbType.VarChar).Value = usuario.Direccion;
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("usuario se ha actualizado con Exito");
                 }
@@ -124,14 +135,20 @@ namespace examenTecnico
 
         private void btn_Guardar_Click(object sender, EventArgs e)
         {
-            string Usuario = tb_usuario.Text;
-            int TipoUsuario = Convert.ToInt32(cb_tipoUsuario.SelectedValue);
-            string Nombre = tb_nombre.Text;
-            string ApellidoPaterno = tb_apellidoPat.Text;
-            string ApellidoMaterno = tb_apellidoMat.Text;
-            int Edad = Convert.ToInt32(tb_edad.Text);
-            string Direccion = tb_direccion.Text;
-            actualizarUsuario(idUsuario, Usuario, TipoUsuario, Nombre, ApellidoPaterno, ApellidoMaterno, Edad, Direccion);
+            Usuario nuevoUsuario = new Usuario
+            {
+                UsuarioId = idUsuario,
+                usuario = tb_usuario.Text,
+                TipoUsuario = Convert.ToInt32(cb_tipoUsuario.SelectedValue),
+                Activo = verificarActivos(),
+                Nombre = tb_nombre.Text,
+                ApellidoPaterno = tb_apellidoPat.Text,
+                ApellidoMaterno = tb_apellidoMat.Text,
+                Edad = Convert.ToInt32(tb_edad.Text),
+                Direccion = tb_direccion.Text
+            };
+
+            actualizarUsuario(nuevoUsuario);
         }
 
         private void btn_salir_Click(object sender, EventArgs e)
@@ -168,10 +185,10 @@ namespace examenTecnico
 
         private void tb_apellidoMat_KeyPress(object sender, KeyPressEventArgs e)
         {
-                if (!char.IsLetter(e.KeyChar) && !char.IsControl(e.KeyChar))
-    {
-        e.Handled = true; // Suprime el carácter ingresado si no es una letra o una tecla de control
-    }
+            if (!char.IsLetter(e.KeyChar) && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true; // Suprime el carácter ingresado si no es una letra o una tecla de control
+            }
         }
     }
 }
